@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from collections import defaultdict
 from flask import Flask, render_template, redirect, url_for, session, request, flash
+from werkzeug.middleware.proxy_fix import ProxyFix
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
@@ -21,6 +22,9 @@ from googleapiclient.errors import HttpError
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', secrets.token_hex(32))
+
+# Trust proxy headers (for HTTPS behind Render/Heroku/etc)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Allow OAuth over HTTP for local development only
 if os.environ.get('FLASK_ENV') != 'production':
