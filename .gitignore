@@ -1,12 +1,14 @@
 # Credentials - NEVER commit
 credentials.json
 token.json
+.env
+.env.local
 
 # Python
 venv/
 __pycache__/
 *.pyc
-.env
+*.pyo
 
 # Flask
 instance/
@@ -15,3 +17,10 @@ instance/
 # Output
 output/
 *.csv
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel

@@ -345,7 +345,16 @@ def disconnect():
 
 @app.route('/scan')
 def scan():
-    """Scan emails for transport data."""
+    """Show scanning loading page."""
+    if 'credentials' not in session:
+        flash('Please connect your email first.', 'error')
+        return redirect(url_for('index'))
+    return render_template('scanning.html')
+
+
+@app.route('/do_scan')
+def do_scan():
+    """Actually scan emails for transport data."""
     if 'credentials' not in session:
         flash('Please connect your email first.', 'error')
         return redirect(url_for('index'))

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanning Your Emails - Trainalyze</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .loader-container {
+            margin-bottom: 30px;
+        }
+
+        .train-loader {
+            font-size: 60px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            animation: progress 3s ease-in-out infinite;
+        }
+
+        @keyframes progress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .status {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .substatus {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .steps {
+            text-align: left;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .step.active {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .step.done {
+            color: #28a745;
+        }
+
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .step.pending .step-icon {
+            background: #e9ecef;
+            color: #666;
+        }
+
+        .step.active .step-icon {
+            background: #667eea;
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        .step.done .step-icon {
+            background: #28a745;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .privacy-note {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #888;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loader-container">
+            <div class="train-loader">🚂</div>
+        </div>
+
+        <h1>Scanning Your Emails</h1>
+        <p class="status" id="status">Looking for transport emails...</p>
+        <p class="substatus" id="substatus">This usually takes 15-30 seconds</p>
+
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+
+        <div class="steps">
+            <div class="step active" id="step1">
+                <div class="step-icon">1</div>
+                <span>Connecting to your email</span>
+            </div>
+            <div class="step pending" id="step2">
+                <div class="step-icon">2</div>
+                <span>Searching for train bookings</span>
+            </div>
+            <div class="step pending" id="step3">
+                <div class="step-icon">3</div>
+                <span>Finding delays & cancellations</span>
+            </div>
+            <div class="step pending" id="step4">
+                <div class="step-icon">4</div>
+                <span>Calculating potential refunds</span>
+            </div>
+        </div>
+
+        <p class="privacy-note">
+            🔒 Your data is processed securely and never stored on our servers
+        </p>
+    </div>
+
+    <script>
+        // Animate through steps
+        const steps = ['step1', 'step2', 'step3', 'step4'];
+        const statuses = [
+            'Connecting to your email...',
+            'Searching for train bookings...',
+            'Finding delays & cancellations...',
+            'Calculating potential refunds...'
+        ];
+        const substatuses = [
+            'Establishing secure connection',
+            'Scanning the last 12 months',
+            'Checking for unclaimed refunds',
+            'Almost done!'
+        ];
+
+        let currentStep = 0;
+
+        function updateStep() {
+            if (currentStep > 0) {
+                document.getElementById(steps[currentStep - 1]).classList.remove('active');
+                document.getElementById(steps[currentStep - 1]).classList.add('done');
+                document.getElementById(steps[currentStep - 1]).querySelector('.step-icon').textContent = '✓';
+            }
+
+            if (currentStep < steps.length) {
+                document.getElementById(steps[currentStep]).classList.remove('pending');
+                document.getElementById(steps[currentStep]).classList.add('active');
+                document.getElementById('status').textContent = statuses[currentStep];
+                document.getElementById('substatus').textContent = substatuses[currentStep];
+                currentStep++;
+
+                setTimeout(updateStep, 2000 + Math.random() * 1500);
+            }
+        }
+
+        // Start animation
+        setTimeout(updateStep, 1000);
+
+        // Redirect to actual scan after showing loader
+        setTimeout(function() {
+            window.location.href = '{{ url_for("do_scan") }}';
+        }, 1500);
+    </script>
+</body>
+</html>

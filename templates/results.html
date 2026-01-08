@@ -358,7 +358,7 @@
                         {% if opp.refund_amount %}
                         <div class="opportunity-amount">£{{ "%.2f"|format(opp.refund_amount) }}</div>
                         {% else %}
-                        <div class="opportunity-amount" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">Check →</div>
+                        <a href="{% if opp.operator and opp.operator in claim_urls %}{{ claim_urls[opp.operator] }}{% else %}https://www.thetrainline.com/trains/great-britain/delay-repay{% endif %}" target="_blank" class="opportunity-amount" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); text-decoration: none; cursor: pointer;">Check Eligibility →</a>
                         {% endif %}
                     </div>
 
@@ -429,21 +429,43 @@
                         {% endif %}
                     </div>
 
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                        {% if opp.operator and opp.operator in claim_urls %}
-                            <a href="{{ claim_urls[opp.operator] }}" target="_blank" class="btn-claim">
-                                Claim from {{ opp.operator }} →
-                            </a>
-                        {% else %}
-                            <a href="https://www.nationalrail.co.uk/travel-information/delays-and-disruptions/" target="_blank" class="btn-claim">
-                                Find Claim Form →
-                            </a>
-                        {% endif %}
+                    {% if not opp.refund_amount %}
+                    <div style="background: #fff8e6; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                        <p style="color: #856404; font-size: 14px; margin: 0 0 10px 0;">
+                            <strong>💡 To check if you're eligible:</strong>
+                        </p>
+                        <ol style="color: #856404; font-size: 13px; margin: 0; padding-left: 20px;">
+                            <li>Find the original booking email for this journey</li>
+                            <li>Note the ticket price you paid</li>
+                            <li>Check how long the train was delayed (15+ mins = eligible)</li>
+                            <li>Submit a claim using the button below</li>
+                        </ol>
+                    </div>
+                    {% endif %}
 
-                        {% if not opp.refund_amount %}
-                        <span style="color: #666; font-size: 13px;">
-                            💡 Find your ticket price to calculate exact refund
-                        </span>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                        {% if opp.refund_amount %}
+                            {# Has calculated amount - show Claim button #}
+                            {% if opp.operator and opp.operator in claim_urls %}
+                                <a href="{{ claim_urls[opp.operator] }}" target="_blank" class="btn-claim">
+                                    Claim £{{ "%.2f"|format(opp.refund_amount) }} from {{ opp.operator }} →
+                                </a>
+                            {% else %}
+                                <a href="https://www.thetrainline.com/trains/great-britain/delay-repay" target="_blank" class="btn-claim">
+                                    Claim £{{ "%.2f"|format(opp.refund_amount) }} →
+                                </a>
+                            {% endif %}
+                        {% else %}
+                            {# No calculated amount - show Check Eligibility button #}
+                            {% if opp.operator and opp.operator in claim_urls %}
+                                <a href="{{ claim_urls[opp.operator] }}" target="_blank" class="btn-claim" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    Check Eligibility on {{ opp.operator }} →
+                                </a>
+                            {% else %}
+                                <a href="https://www.thetrainline.com/trains/great-britain/delay-repay" target="_blank" class="btn-claim" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    Check Eligibility on Trainline →
+                                </a>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
@@ -491,8 +513,8 @@
                             Try Claiming Anyway →
                         </a>
                     {% else %}
-                        <a href="https://www.nationalrail.co.uk/travel-information/delays-and-disruptions/" target="_blank" class="btn-claim" style="background: #6c757d;">
-                            Find Claim Form →
+                        <a href="https://www.thetrainline.com/trains/great-britain/delay-repay" target="_blank" class="btn-claim" style="background: #6c757d;">
+                            Try Claiming on Trainline →
                         </a>
                     {% endif %}
                 </div>
@@ -509,7 +531,7 @@
                     We detected delay-related emails but couldn't extract specific journey details.
                     Check your inbox for emails from train operators mentioning "delay", "cancelled", or "disruption" - you may be owed money!
                 </p>
-                <a href="https://www.nationalrail.co.uk/travel-information/delays-and-disruptions/" target="_blank" class="btn-claim" style="margin-top: 15px;">
+                <a href="https://www.thetrainline.com/trains/great-britain/delay-repay" target="_blank" class="btn-claim" style="margin-top: 15px;">
                     Learn About Delay Repay →
                 </a>
             </div>

@@ -20,12 +20,17 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(32)
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', secrets.token_hex(32))
 
-# Allow OAuth over HTTP for local development
-os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+# Allow OAuth over HTTP for local development only
+if os.environ.get('FLASK_ENV') != 'production':
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
+
+# Get credentials from environment variables or file
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET')
 CLIENT_SECRETS_FILE = 'credentials.json'
 
 # UK Transport email senders (comprehensive list)
@@ -141,10 +146,26 @@ OPERATOR_MAP = {
 
 def get_flow():
     """Create OAuth flow."""
+    redirect_uri = url_for('oauth_callback', _external=True)
+
+    # Use environment variables if available (for production)
+    if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
+        client_config = {
+            "web": {
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "redirect_uris": [redirect_uri]
+            }
+        }
+        return Flow.from_client_config(client_config, scopes=SCOPES, redirect_uri=redirect_uri)
+
+    # Fall back to credentials file (for local development)
     return Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE,
         scopes=SCOPES,
-        redirect_uri=url_for('oauth_callback', _external=True)
+        redirect_uri=redirect_uri
     )
 
 
@@ -350,7 +371,16 @@ def disconnect():
 
 @app.route('/scan')
 def scan():
-    """Scan emails for transport data."""
+    """Show scanning loading page."""
+    if 'credentials' not in session:
+        flash('Please connect your email first.', 'error')
+        return redirect(url_for('index'))
+    return render_template('scanning.html')
+
+
+@app.route('/do_scan')
+def do_scan():
+    """Actually scan emails for transport data."""
     if 'credentials' not in session:
         flash('Please connect your email first.', 'error')
         return redirect(url_for('index'))
