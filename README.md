@@ -2,6 +2,16 @@
 
 A simple web app to find unclaimed train refunds from your emails.
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/01-home.JPG" alt="1"/>
+  <img src="screenshots/02-resultsheader.JPG" alt="2"/>
+  <img src="screenshots/03-sample1.JPG" alt="3"/>
+  <img src="screenshots/04-sample2.JPG" alt="4"/>
+  
+</p>
+
 ## What You'll See
 
 1. **Connect** - Sign in with your email account
