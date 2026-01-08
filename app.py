@@ -595,9 +595,27 @@ def inject_claim_urls():
     return {'claim_urls': CLAIM_URLS}
 
 
+# if __name__ == '__main__':
+#     print("\n" + "="*50)
+#     print("  Trainalyze Web")
+#     print("  Open http://localhost:5000 in your browser")
+#     print("="*50 + "\n")
+#     app.run(debug=True, port=5000)
 if __name__ == '__main__':
+    import os
+
+    # Use Render's port if set, otherwise default to 5000 for local testing
+    port = int(os.environ.get("PORT", 5000))
+
+    # Print startup info for local development
     print("\n" + "="*50)
     print("  Trainalyze Web")
-    print("  Open http://localhost:5000 in your browser")
+    if port == 5000:
+        print(f"  Open http://localhost:{port} in your browser")
+    else:
+        print(f"  Running on port {port} (Render will route traffic here)")
     print("="*50 + "\n")
-    app.run(debug=True, port=5000)
+
+    # Run the app, binding to 0.0.0.0 so Render can detect it
+    app.run(host="0.0.0.0", port=port, debug=True)
+
