@@ -1,0 +1,17 @@
+# Credentials - NEVER commit
+credentials.json
+token.json
+
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Flask
+instance/
+.webassets-cache
+
+# Output
+output/
+*.csv

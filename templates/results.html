@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Results - Trainalyze</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .logo span {
+            font-size: 28px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline {
+            border: 2px solid #667eea;
+            color: #667eea;
+            background: white;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .card.highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .card-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .card.highlight .card-value {
+            color: white;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 22px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .opportunity {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .opportunity:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .opportunity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .opportunity-operator {
+            font-weight: 600;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .opportunity-amount {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .opportunity-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .detail strong {
+            display: block;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .btn-claim {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .btn-claim:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-results .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-booking {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .badge-delay {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-refund {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+        }
+
+        .badge-confidence {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .badge-high { background: #d4edda; color: #155724; }
+        .badge-medium { background: #fff3cd; color: #856404; }
+        .badge-low { background: #f8d7da; color: #721c24; }
+
+        .badge-expired { background: #f8d7da; color: #721c24; }
+        .badge-active { background: #d4edda; color: #155724; }
+
+        .badge-category {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-right: 8px;
+        }
+        .badge-delay { background: #fff3cd; color: #856404; }
+        .badge-cancellation { background: #f8d7da; color: #721c24; }
+        .badge-delay_claim { background: #cce5ff; color: #004085; }
+
+        .recommendation {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .expired-section {
+            opacity: 0.7;
+            border: 2px dashed #dee2e6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="{{ url_for('index') }}" class="logo">
+                <span>🚂</span>
+                <h1>Trainalyze</h1>
+            </a>
+            <a href="{{ url_for('scan') }}" class="btn btn-outline">Scan Again</a>
+        </header>
+
+        <div class="summary-cards">
+            <div class="card">
+                <div class="card-label">Emails Scanned</div>
+                <div class="card-value">{{ results.total_emails }}</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Bookings Found</div>
+                <div class="card-value">{{ results.total_bookings }}</div>
+            </div>
+
+            <div class="card highlight">
+                <div class="card-label">Potential Refunds</div>
+                <div class="card-value">£{{ "%.2f"|format(results.total_spend) }}</div>
+            </div>
+        </div>
+
+        {% if results.opportunities or results.total_delays > 0 %}
+        <div class="section">
+            <h2>💰 Claim Your Refunds</h2>
+
+            <p style="color: #666; margin-bottom: 20px;">
+                We found <strong>{{ results.total_delays }}</strong> delay/cancellation emails.
+                {% if results.total_spend > 0 %}
+                You could be owed up to <strong>£{{ "%.2f"|format(results.total_spend) }}</strong>.
+                {% endif %}
+            </p>
+
+            {% set has_shown_any = [] %}
+
+            {% for opp in results.opportunities %}
+                {% if opp.deadline_status != 'expired' %}
+                <div class="opportunity">
+                    <div class="opportunity-header">
+                        <div class="opportunity-operator">
+                            <span class="badge-category badge-{{ opp.category or 'delay' }}">
+                                {% if opp.category == 'cancellation' %}Cancelled{% elif opp.category == 'delay_claim' %}Claim Filed{% else %}Delayed{% endif %}
+                            </span>
+                            {{ opp.operator or 'Train Operator' }}
+                            {% if opp.refund_amount %}
+                            <span class="badge-confidence badge-{{ opp.confidence }}">{{ opp.confidence }} confidence</span>
+                            {% else %}
+                            <span class="badge-confidence badge-low">check eligibility</span>
+                            {% endif %}
+                        </div>
+                        {% if opp.refund_amount %}
+                        <div class="opportunity-amount">£{{ "%.2f"|format(opp.refund_amount) }}</div>
+                        {% else %}
+                        <div class="opportunity-amount" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">Check →</div>
+                        {% endif %}
+                    </div>
+
+                    {% if opp.subject %}
+                    <p style="color: #888; font-size: 13px; margin-bottom: 12px; font-style: italic;">
+                        "{{ opp.subject }}"
+                    </p>
+                    {% endif %}
+
+                    <div class="opportunity-details">
+                        <div class="detail">
+                            <strong>Date</strong>
+                            {{ opp.journey_date or (opp.date[:16] if opp.date else 'Check email') }}
+                        </div>
+
+                        {% if opp.booking_ref %}
+                        <div class="detail">
+                            <strong>Booking Ref</strong>
+                            {{ opp.booking_ref }}
+                        </div>
+                        {% endif %}
+
+                        {% if opp.origin or opp.destination %}
+                        <div class="detail">
+                            <strong>Route</strong>
+                            {{ opp.origin or '?' }} → {{ opp.destination or '?' }}
+                        </div>
+                        {% endif %}
+
+                        {% if opp.delay_mins %}
+                        <div class="detail">
+                            <strong>Delay</strong>
+                            {{ opp.delay_mins }} minutes
+                            {% if opp.delay_mins >= 60 %}
+                            <span style="color: #155724;">(100% refund eligible)</span>
+                            {% elif opp.delay_mins >= 30 %}
+                            <span style="color: #856404;">(50% refund eligible)</span>
+                            {% elif opp.delay_mins >= 15 %}
+                            <span style="color: #856404;">(25% refund eligible)</span>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="detail">
+                            <strong>Delay</strong>
+                            Delay mentioned in email - check details
+                        </div>
+                        {% endif %}
+
+                        {% if opp.price %}
+                        <div class="detail">
+                            <strong>Ticket Price</strong>
+                            £{{ "%.2f"|format(opp.price) }}
+                        </div>
+                        {% endif %}
+
+                        {% if opp.refund_pct %}
+                        <div class="detail">
+                            <strong>Refund Rate</strong>
+                            {{ opp.refund_pct }}% of ticket
+                        </div>
+                        {% endif %}
+
+                        {% if opp.deadline %}
+                        <div class="detail">
+                            <strong>Claim By</strong>
+                            {{ opp.deadline }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                        {% if opp.operator and opp.operator in claim_urls %}
+                            <a href="{{ claim_urls[opp.operator] }}" target="_blank" class="btn-claim">
+                                Claim from {{ opp.operator }} →
+                            </a>
+                        {% else %}
+                            <a href="https://www.nationalrail.co.uk/travel-information/delays-and-disruptions/" target="_blank" class="btn-claim">
+                                Find Claim Form →
+                            </a>
+                        {% endif %}
+
+                        {% if not opp.refund_amount %}
+                        <span style="color: #666; font-size: 13px;">
+                            💡 Find your ticket price to calculate exact refund
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if has_shown_any.append(1) %}{% endif %}
+                {% endif %}
+            {% endfor %}
+
+            {% if results.total_expired > 0 %}
+            <h3 style="margin-top: 30px; color: #666;">⏰ Expired Claims (worth trying anyway)</h3>
+            <p style="color: #888; font-size: 14px; margin-bottom: 15px;">These are past the official 28-day deadline, but many operators still accept late claims - always worth a try!</p>
+            {% for opp in results.opportunities %}
+                {% if opp.deadline_status == 'expired' %}
+                <div class="opportunity expired-section">
+                    <div class="opportunity-header">
+                        <div class="opportunity-operator">
+                            {{ opp.operator or 'Train Operator' }}
+                            <span class="badge-confidence badge-expired">past deadline</span>
+                        </div>
+                        {% if opp.refund_amount %}
+                        <div class="opportunity-amount" style="background: #6c757d;">£{{ "%.2f"|format(opp.refund_amount) }}</div>
+                        {% else %}
+                        <div class="opportunity-amount" style="background: #6c757d;">Check →</div>
+                        {% endif %}
+                    </div>
+                    <div class="opportunity-details">
+                        <div class="detail">
+                            <strong>Date</strong>
+                            {{ opp.journey_date or (opp.date[:16] if opp.date else 'Check email') }}
+                        </div>
+                        {% if opp.delay_mins %}
+                        <div class="detail">
+                            <strong>Delay</strong>
+                            {{ opp.delay_mins }} minutes
+                        </div>
+                        {% endif %}
+                        {% if opp.booking_ref %}
+                        <div class="detail">
+                            <strong>Booking Ref</strong>
+                            {{ opp.booking_ref }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% if opp.operator and opp.operator in claim_urls %}
+                        <a href="{{ claim_urls[opp.operator] }}" target="_blank" class="btn-claim" style="background: #6c757d;">
+                            Try Claiming Anyway →
+                        </a>
+                    {% else %}
+                        <a href="https://www.nationalrail.co.uk/travel-information/delays-and-disruptions/" target="_blank" class="btn-claim" style="background: #6c757d;">
+                            Find Claim Form →
+                        </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+            {% endif %}
+
+            {% if results.total_delays > 0 and not results.opportunities %}
+            <div class="empty-state" style="background: #fff3cd; border-radius: 12px; padding: 25px;">
+                <p style="color: #856404; font-size: 16px; margin-bottom: 15px;">
+                    <strong>{{ results.total_delays }} delay emails found</strong>
+                </p>
+                <p style="color: #856404;">
+                    We detected delay-related emails but couldn't extract specific journey details.
+                    Check your inbox for emails from train operators mentioning "delay", "cancelled", or "disruption" - you may be owed money!
+                </p>
+                <a href="https://www.nationalrail.co.uk/travel-information/delays-and-disruptions/" target="_blank" class="btn-claim" style="margin-top: 15px;">
+                    Learn About Delay Repay →
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="section">
+            <div class="no-results">
+                <div class="icon">🎉</div>
+                <h3>No unclaimed refunds found!</h3>
+                <p>Either you've been lucky with delays, or you're already claiming your refunds. Great job!</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if results.recommendations %}
+        <div class="section">
+            <h2>💡 Recommendations</h2>
+            {% for rec in results.recommendations %}
+            <div class="recommendation">
+                {{ rec }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if results.bookings %}
+        <div class="section">
+            <h2>📋 Recent Bookings</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Operator</th>
+                        <th>Reference</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in results.bookings %}
+                    <tr>
+                        <td>{{ booking.date[:20] if booking.date else '-' }}</td>
+                        <td>{{ booking.operator or booking.sender[:30] or '-' }}</td>
+                        <td>{{ booking.booking_ref or '-' }}</td>
+                        <td>{% if booking.price %}£{{ "%.2f"|format(booking.price) }}{% else %}-{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <div class="section">
+            <h2>ℹ️ How Delay Refunds Work</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Delay Length</th>
+                        <th>What You Get Back</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>15-29 minutes</td>
+                        <td>25% of ticket price</td>
+                    </tr>
+                    <tr>
+                        <td>30-59 minutes</td>
+                        <td>50% of ticket price</td>
+                    </tr>
+                    <tr>
+                        <td>60+ minutes</td>
+                        <td>Full refund</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 15px; color: #666; font-size: 14px;">
+                Most train companies let you claim within 28 days of travel. Some accept late claims too!
+            </p>
+        </div>
+
+        <footer>
+            <p>
+                <a href="{{ url_for('index') }}">← Back to Home</a> ·
+                <a href="{{ url_for('disconnect') }}">Disconnect Email</a>
+            </p>
+            <p style="margin-top: 10px;">
+                Your data never leaves your computer.
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
